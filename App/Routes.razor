@@ -1,0 +1,13 @@
+﻿<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<Router AppAssembly="typeof(Program).Assembly">
+  <Found Context="routeData">
+    <Wrapper RouteData="@routeData">
+      <RouteView RouteData="routeData" DefaultLayout="typeof(DefaultLayout)" />
+      <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Wrapper>
+  </Found>
+</Router>

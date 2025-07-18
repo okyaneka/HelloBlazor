@@ -1,0 +1,68 @@
+@page "/login"
+@using HelloBlazor.App.Features.Auth.Models
+@using HelloBlazor.App.Features.Auth.Services
+@using System.Text.Json
+
+@inject IAuthService service
+@inject NavigationManager Navigation
+
+@attribute [OnlyUnAuth]
+
+<PageTitle>Login</PageTitle>
+
+<section class="min-vh-100 d-flex justify-content-center align-items-center" style="background-color: #f8f9fa;">
+  <MudCard Style="width: 400px; max-width: 100%;">
+    <MudCardContent>
+      <h3 class="text-center">Login</h3>
+
+      <EditForm class="d-flex flex-column gap-2" Model="@loginModel" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+
+        <MudTextField Variant="Variant.Outlined" @bind-Value="loginModel.Email" Label="Email"
+          For="@(() => loginModel.Email)" />
+
+        <InputPassword Variant="Variant.Outlined" @bind-Value="loginModel.Password" Label="Password"
+          InputType="InputType.Password" For="@(() => loginModel.Password)" />
+
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4"
+          Disabled="@isLoading">
+          @if (isLoading)
+          {
+            <MudProgressCircular Class="mr-2" Indeterminate="true" Size="Size.Small" />
+          }
+          Login
+        </MudButton>
+
+        <div class="text-center">Klik
+          <MudLink href="/register">
+            di sini
+          </MudLink>
+          untuk register.
+        </div>
+      </EditForm>
+    </MudCardContent>
+  </MudCard>
+</section>
+
+@code {
+  private LoginModel loginModel = new LoginModel();
+  bool isLoading = false;
+
+  private async Task HandleValidSubmit()
+  {
+    try
+    {
+      isLoading = true;
+      await Task.Delay(1000);
+      var res = await service.LoginAsync(loginModel);
+      Snackbar.Add($"Welcome, {res.Data.Fullname}!", Severity.Success);
+      Navigation.NavigateTo("/", forceLoad: true);
+      isLoading = false;
+    }
+    catch (Exception ex)
+    {
+      Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+      isLoading = false;
+    }
+  }
+}

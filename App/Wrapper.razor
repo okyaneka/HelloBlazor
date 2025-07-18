@@ -1,0 +1,33 @@
+@using HelloBlazor.App.Features.Auth.Services;
+@using System.Reflection
+@inject NavigationManager Navigation
+@inject IAuthService service
+
+@ChildContent
+
+@code {
+  [Parameter]
+  public required RenderFragment ChildContent { get; set; }
+
+  [Parameter]
+  public required RouteData RouteData { get; set; }
+
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    var pageType = RouteData.PageType;
+
+    var isLoggedIn = await service.IsLoggedInAsync();
+    var onlyAuth = pageType.GetCustomAttribute<OnlyAuthAttribute>() != null;
+    var onlyUnAuth = pageType.GetCustomAttribute<OnlyUnAuthAttribute>() != null;
+
+    if (onlyAuth && !isLoggedIn)
+    {
+      Navigation.NavigateTo("/login", true);
+    }
+    else if (onlyUnAuth && isLoggedIn)
+    {
+      Navigation.NavigateTo("/", true);
+    }
+  }
+}

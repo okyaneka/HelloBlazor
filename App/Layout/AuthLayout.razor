@@ -1,0 +1,71 @@
+@inherits LayoutComponentBase
+@using MudBlazor
+@using HelloBlazor.App.Features.Auth.Services
+
+@inject IAuthService service
+@inject NavigationManager Navigation
+
+<MudLayout>
+  <!-- AppBar -->
+  <MudAppBar Color="Color.Primary" Elevation="4">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+    <MudText Typo="Typo.h6">Home</MudText>
+
+    <!-- Right: Profile Dropdown -->
+    <MudSpacer /> <!-- Push the menu to the right -->
+    <MudMenu Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" AnchorOrigin="Origin.TopRight"
+      TransformOrigin="Origin.TopRight">
+      <MudMenuItem>Profile</MudMenuItem>
+      <MudMenuItem OnClick="@HandleLogout">Logout</MudMenuItem>
+    </MudMenu>
+  </MudAppBar>
+
+  <!-- Drawer -->
+  <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1" Anchor="Anchor.Left"
+    Variant="DrawerVariant.Responsive">
+    <MudNavMenu>
+      <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    </MudNavMenu>
+  </MudDrawer>
+
+  <!-- Main content -->
+  <MudMainContent>
+    @if (!isReady)
+    {
+      <section class="d-flex flex-column justify-center align-center" style="height: 100vh; width: 100vw; gap: 1rem;">
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+        <MudText Typo="Typo.h6" Class="mb-4">Loading...</MudText>
+      </section>
+    }
+    <main style="display: @(isReady ? "block" : "none")">
+      @Body
+    </main>
+  </MudMainContent>
+
+</MudLayout>
+
+@code {
+  private bool drawerOpen = true;
+  private bool isReady = false;
+
+  void ToggleDrawer()
+  {
+    drawerOpen = !drawerOpen;
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      await service.IsLoggedInAsync();
+      isReady = true;
+      StateHasChanged();
+    }
+  }
+
+  private async Task HandleLogout()
+  {
+    await service.LogoutAsync();
+    Navigation.NavigateTo("/login");
+  }
+}
