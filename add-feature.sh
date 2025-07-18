@@ -2,7 +2,10 @@
 
 # === Validate input ===
 if [ -z "$1" ]; then
-  echo "Usage: bash add-feature.sh <FeatureName>"
+  BLUE='\033[1;34m'
+  GREEN='\033[1;32m'
+  NC='\033[0m' 
+  printf "${BLUE}Usage${NC}: bash add-feature.sh ${GREEN}<FeatureName>${NC}\n"
   exit 1
 fi
 
