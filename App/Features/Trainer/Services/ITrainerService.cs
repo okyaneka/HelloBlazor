@@ -4,5 +4,5 @@ namespace HelloBlazor.App.Features.Trainer.Services;
 
 public interface ITrainerService
 {
-  Task<DefaultListResponse<TrainerItem>> GetTrainerListAsync();
+  Task<DefaultListResponse<TrainerItem>> GetTrainerListAsync(object? parameters = null);
 }

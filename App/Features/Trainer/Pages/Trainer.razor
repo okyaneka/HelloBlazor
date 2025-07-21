@@ -11,17 +11,16 @@
 
 <PageTitle>Trainer</PageTitle>
 
-<section class="m-4">
+<section class="ma-4 flex flex-column gap-4">
   <h1>Trainer</h1>
 
-
-  @if (isLoading)
+  @if (isLoading && items.Count() == 0)
   {
     <Loading />
   }
   else
   {
-    <MudTable Items="@trainerList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoading"
+    <MudTable Items="@(items)" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoading"
       LoadingProgressColor="Color.Info">
       <HeaderContent>
         <MudTh>No</MudTh>
@@ -31,24 +30,31 @@
         <MudTh></MudTh>
       </HeaderContent>
       <RowTemplate>
-        <MudTd DataLabel="Nr">@(++rowIndex)</MudTd>
-        <MudTd DataLabel="Title">@context.Title</MudTd>
-        <MudTd DataLabel="Company">@context.Company.Name</MudTd>
-        <MudTd DataLabel="Type">@context.Type</MudTd>
+        <MudTd DataLabel="Nr">@(context.Index + 1 + startRow)</MudTd>
+        <MudTd DataLabel="Title">@context.Item.Title</MudTd>
+        <MudTd DataLabel="Company">@context.Item.Company.Name</MudTd>
+        <MudTd DataLabel="Type">@context.Item.Type</MudTd>
         <MudTd DataLabel="Action"></MudTd>
       </RowTemplate>
     </MudTable>
-  }
 
-  <div>
-    <MudButton OnClick="GetTrainerListAsync">Refresh</MudButton>
-  </div>
+    <MudPagination Class="mt-3" Color="Color.Primary" Count="pageCount" Selected="@(page)" SelectedChanged="GoToPage" />
+  }
 </section>
 
 @code {
-  int rowIndex = 0;
+  class ItemWithIndex { public required TrainerItem Item; public int Index; }
+  int page = 1;
+  int pageSize = 2;
+  int pageCount = 1;
+  int startRow => (page - 1) * pageSize;
+  List<TrainerItem> originalItems = new();
   bool isLoading = false;
-  IEnumerable<TrainerItem> trainerList = new List<TrainerItem>();
+  IEnumerable<ItemWithIndex> items => originalItems.Select((item, index) => new ItemWithIndex
+  {
+    Item = item,
+    Index = index
+  });
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
@@ -60,14 +66,12 @@
   {
     try
     {
-      rowIndex = 0;
       isLoading = true;
       StateHasChanged();
-      var res = await service.GetTrainerListAsync();
-      var items = res.Data.List;
-      Console.WriteLine($"Trainer List Count: {items.Count()}");
-      Console.WriteLine($"Trainer List: {JsonSerializer.Serialize(items[0])}");
-      trainerList = items;
+      var res = await service.GetTrainerListAsync(GetParameters());
+      originalItems = res.Data.List;
+      page = res.Data.Page;
+      pageCount = res.Data.TotalPage;
     }
     catch (Exception ex)
     {
@@ -78,5 +82,20 @@
       isLoading = false;
       StateHasChanged();
     }
+  }
+
+  async Task GoToPage(int pageNumber)
+  {
+    page = pageNumber;
+    await GetTrainerListAsync();
+  }
+
+  object GetParameters()
+  {
+    return new
+    {
+      page = page,
+      limit = pageSize
+    };
   }
 }
