@@ -4,30 +4,27 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace HelloBlazor.App.Features.Auth.Services;
 
-public class AuthService(Service service, ProtectedLocalStorage localStorage) : IAuthService
+public class AuthService(Service service, Authx auth) : IAuthService
 {
   private readonly Service service = service;
-  private readonly ProtectedLocalStorage localStorage = localStorage;
   private bool? isLoggedIn;
 
   public async Task<LoginResponse> LoginAsync(LoginModel model)
   {
     var res = await service.PostAsync<LoginResponse, LoginModel>("/trainer/v1/login", model);
     var token = res.Data.Token;
-    await localStorage.SetAsync("AuthToken", token);
-
+    await auth.SetToken(token);
     return res;
   }
 
   public async Task LogoutAsync()
   {
-    await localStorage.DeleteAsync("AuthToken");
+    await auth.ClearToken();
   }
 
-  public async Task<string> GetTokenAsync()
+  public async Task<string?> GetTokenAsync()
   {
-    var result = await localStorage.GetAsync<string>("AuthToken");
-    return result.Value ?? string.Empty;
+    return await auth.GetToken();
   }
 
   public async Task<bool> IsLoggedInAsync()
