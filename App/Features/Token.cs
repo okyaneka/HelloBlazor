@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace HelloBlazor.App.Features;
 
-public class Authx(ProtectedLocalStorage localStorage)
+public class Token(ProtectedLocalStorage localStorage)
 {
   string? token { get; set; }
 

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace HelloBlazor.App.Features.Auth.Services;
 
-public class AuthService(Service service, Authx auth) : IAuthService
+public class AuthService(Service service, Token auth) : IAuthService
 {
   private readonly Service service = service;
   private bool? isLoggedIn;

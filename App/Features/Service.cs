@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace HelloBlazor.App.Features;
 
-public class Service(HttpClient httpClient, Authx auth, NavigationManager navigation)
+public class Service(HttpClient httpClient, Token auth, NavigationManager navigation)
 {
   private readonly HttpClient httpClient = httpClient;
 
