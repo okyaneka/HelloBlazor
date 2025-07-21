@@ -16,3 +16,21 @@ public class DefaultResponse<T>
   [JsonPropertyName("validation")]
   public object? Validation { get; set; }
 }
+
+public class DefaultListResponse<T> : DefaultResponse<ListResponse<T>>
+{ }
+
+public class ListResponse<T>
+{
+  [JsonPropertyName("list")]
+  public required List<T> List { get; set; }
+
+  [JsonPropertyName("page")]
+  public required int Page { get; set; }
+
+  [JsonPropertyName("total")]
+  public required int Total { get; set; }
+
+  [JsonPropertyName("total_page")]
+  public required int TotalPage { get; set; }
+}

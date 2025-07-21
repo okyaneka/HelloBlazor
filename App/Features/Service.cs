@@ -18,6 +18,12 @@ public class Service(HttpClient httpClient, Token auth, NavigationManager naviga
     {
       httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
+    else
+    {
+      await auth.ClearToken();
+      navigation.NavigateTo("/login");
+      return;
+    }
   }
 
   public async Task<TValue> GetAsync<TValue>(string url, object? query)

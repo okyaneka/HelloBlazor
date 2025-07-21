@@ -5,44 +5,46 @@
 @inject IAuthService service
 @inject NavigationManager Navigation
 
-<MudLayout>
-  <!-- AppBar -->
-  <MudAppBar Color="Color.Primary" Elevation="4">
-    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
-    <MudText Typo="Typo.h6">Home</MudText>
+@if (!isReady)
+{
+  <section class="d-flex flex-column justify-center align-center" style="height: 100vh; width: 100vw; gap: 1rem;">
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    <MudText Typo="Typo.h6" Class="mb-4">Loading...</MudText>
+  </section>
+}
 
-    <!-- Right: Profile Dropdown -->
-    <MudSpacer /> <!-- Push the menu to the right -->
-    <MudMenu Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" AnchorOrigin="Origin.TopRight"
-      TransformOrigin="Origin.TopRight">
-      <MudMenuItem>Profile</MudMenuItem>
-      <MudMenuItem OnClick="@HandleLogout">Logout</MudMenuItem>
-    </MudMenu>
-  </MudAppBar>
+<main style="display: @(isReady ? "block" : "none")">
+  <MudLayout>
+    <!-- AppBar -->
+    <MudAppBar Color="Color.Primary" Elevation="4">
+      <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+        OnClick="@ToggleDrawer" />
+      <MudText Typo="Typo.h6">Home</MudText>
 
-  <!-- Drawer -->
-  <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1" Anchor="Anchor.Left"
-    Variant="DrawerVariant.Responsive">
-    <MudNavMenu>
-      <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    </MudNavMenu>
-  </MudDrawer>
+      <!-- Right: Profile Dropdown -->
+      <MudSpacer /> <!-- Push the menu to the right -->
+      <MudMenu Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" AnchorOrigin="Origin.TopRight"
+        TransformOrigin="Origin.TopRight">
+        <MudMenuItem>Profile</MudMenuItem>
+        <MudMenuItem OnClick="@HandleLogout">Logout</MudMenuItem>
+      </MudMenu>
+    </MudAppBar>
 
-  <!-- Main content -->
-  <MudMainContent>
-    @if (!isReady)
-    {
-      <section class="d-flex flex-column justify-center align-center" style="height: 100vh; width: 100vw; gap: 1rem;">
-        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
-        <MudText Typo="Typo.h6" Class="mb-4">Loading...</MudText>
-      </section>
-    }
-    <main style="display: @(isReady ? "block" : "none")">
+    <!-- Drawer -->
+    <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1" Anchor="Anchor.Left"
+      Variant="DrawerVariant.Responsive">
+      <MudNavMenu>
+        <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">Home</MudNavLink>
+        <MudNavLink Href="/company" Icon="@Icons.Material.Filled.Business">Company</MudNavLink>
+      </MudNavMenu>
+    </MudDrawer>
+
+    <!-- Main content -->
+    <MudMainContent>
       @Body
-    </main>
-  </MudMainContent>
-
-</MudLayout>
+    </MudMainContent>
+  </MudLayout>
+</main>
 
 @code {
   private bool drawerOpen = true;

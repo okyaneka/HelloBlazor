@@ -35,7 +35,8 @@ printf "namespace $NAMESPACE.Services;\n\npublic interface I${FEATURE_NAME}Servi
 printf "namespace $NAMESPACE.Services;\n\npublic class ${FEATURE_NAME}Service : I${FEATURE_NAME}Service\n{\n\n}" > "$BASE_DIR/Services/${FEATURE_NAME}Service.cs"
 
 # === Feedback for files created ===
-echo "Files created:"
+echo ""
+echo "✅ Files created:"
 echo "   ├── Components/Sample.razor"
 echo "   ├── Models/${FEATURE_NAME}Model.cs"
 echo "   ├── Pages/${FEATURE_NAME}.razor"

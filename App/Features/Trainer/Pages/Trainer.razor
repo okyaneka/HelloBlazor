@@ -1,0 +1,82 @@
+@page "/company"
+@layout AuthLayout
+
+@using System.Text.Json
+@using HelloBlazor.App.Features.Trainer.Components
+@using HelloBlazor.App.Features.Trainer.Models
+@using HelloBlazor.App.Features.Trainer.Services
+
+@inject ITrainerService service
+@inject ISnackbar Snackbar
+
+<PageTitle>Trainer</PageTitle>
+
+<section class="m-4">
+  <h1>Trainer</h1>
+
+
+  @if (isLoading)
+  {
+    <Loading />
+  }
+  else
+  {
+    <MudTable Items="@trainerList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoading"
+      LoadingProgressColor="Color.Info">
+      <HeaderContent>
+        <MudTh>No</MudTh>
+        <MudTh>Judul</MudTh>
+        <MudTh>Perusahaan</MudTh>
+        <MudTh>Jenis</MudTh>
+        <MudTh></MudTh>
+      </HeaderContent>
+      <RowTemplate>
+        <MudTd DataLabel="Nr">@(++rowIndex)</MudTd>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Company">@context.Company.Name</MudTd>
+        <MudTd DataLabel="Type">@context.Type</MudTd>
+        <MudTd DataLabel="Action"></MudTd>
+      </RowTemplate>
+    </MudTable>
+  }
+
+  <div>
+    <MudButton OnClick="GetTrainerListAsync">Refresh</MudButton>
+  </div>
+</section>
+
+@code {
+  int rowIndex = 0;
+  bool isLoading = false;
+  IEnumerable<TrainerItem> trainerList = new List<TrainerItem>();
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+      await GetTrainerListAsync();
+  }
+
+  async Task GetTrainerListAsync()
+  {
+    try
+    {
+      rowIndex = 0;
+      isLoading = true;
+      StateHasChanged();
+      var res = await service.GetTrainerListAsync();
+      var items = res.Data.List;
+      Console.WriteLine($"Trainer List Count: {items.Count()}");
+      Console.WriteLine($"Trainer List: {JsonSerializer.Serialize(items[0])}");
+      trainerList = items;
+    }
+    catch (Exception ex)
+    {
+      Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+    }
+    finally
+    {
+      isLoading = false;
+      StateHasChanged();
+    }
+  }
+}
