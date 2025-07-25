@@ -4,7 +4,7 @@
   "description": "Using Dotnet 8",
   "main": "index.js",
   "scripts": {
-    "watch": "npx @tailwindcss/cli -i ./tailwind.css -o ./wwwroot/app.css --watch"
+    "watch": "npx @tailwindcss/cli -i ./input.css -o ./wwwroot/app.css --watch"
   },
   "keywords": [],
   "author": "",

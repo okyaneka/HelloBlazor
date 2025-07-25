@@ -55,6 +55,49 @@ public class Service(HttpClient httpClient, Token auth, NavigationManager naviga
     return data;
   }
 
+  public async Task<TValue> PostMultipartAsync<TValue, TRequest>(string url, TRequest request)
+  {
+    await UseTokenIfExists();
+
+    var content = GetMultipartContent(request);
+    var res = await httpClient.PostAsync(url, content);
+    if (!res.IsSuccessStatusCode)
+      await HandleError(res);
+
+    var data = await res.Content.ReadFromJsonAsync<TValue>() ?? throw new Exception("Response content is null");
+
+    return data;
+  }
+
+  private MultipartFormDataContent GetMultipartContent<TRequest>(TRequest request)
+  {
+    var content = new MultipartFormDataContent();
+
+    foreach (var prop in typeof(TRequest).GetProperties())
+    {
+      var value = prop.GetValue(request);
+      if (value == null)
+        continue;
+
+      if (value is Stream stream)
+      {
+        string fileName = typeof(TRequest).GetProperty("FileName")?.GetValue(request)?.ToString() ?? "uploaded.file";
+        content.Add(new StreamContent(stream), prop.Name, fileName);
+      }
+      else if (value is byte[] bytes)
+      {
+        string fileName = typeof(TRequest).GetProperty("FileName")?.GetValue(request)?.ToString() ?? "uploaded.file";
+        content.Add(new ByteArrayContent(bytes), prop.Name, fileName);
+      }
+      else
+      {
+        content.Add(new StringContent(value.ToString()!), prop.Name);
+      }
+    }
+
+    return content;
+  }
+
   private async Task HandleError(HttpResponseMessage res)
   {
     if (res.StatusCode == HttpStatusCode.Unauthorized)
